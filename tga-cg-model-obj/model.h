@@ -22,6 +22,8 @@
 #include <vector>
 using namespace std;
 
+static int teclaPressionada = 0;
+
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
 class Model
@@ -44,7 +46,7 @@ public:
 	void Draw(Shader shader)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			shader.setInt("selecionado", i);
+			shader.setBool("selecionado", teclaPressionada == (i+1));
 			meshes[i].Draw(shader);
 		}
 	}

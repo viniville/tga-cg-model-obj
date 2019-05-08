@@ -89,6 +89,7 @@ int main()
 
 	// render loop
 	// -----------
+	bool inicializou = false;
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -116,13 +117,24 @@ int main()
 		ourShader.setMat4("view", view);
 
 		// render the loaded model
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+		glm::mat4 model;
+		if (!inicializou) {
+			inicializou = true;
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+		}
+		else {
+			if (teclaMovimentoDireitaPressionada) {
+				model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));
+			}
+			if (teclaMovimentoEsquerdaPressionada) {
+				model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 0.0f));
+			}
+		}
 		ourShader.setMat4("model", model);
-		//ourShader.setInt("selecionado", teclaPressionada);
-		ourModel.Draw(ourShader);
 
+		ourModel.Draw(ourShader);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -152,26 +164,31 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 
-	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
-		teclaPressionada = 0;
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		teclaPressionada = 1;
-	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-		teclaPressionada = 2;
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
-		teclaPressionada = 3;
-	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
-		teclaPressionada = 4;
-	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
-		teclaPressionada = 5;
-	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
-		teclaPressionada = 6;
-	if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
-		teclaPressionada = 7;
-	if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
-		teclaPressionada = 8;
-	if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
-		teclaPressionada = 9;
+	//captura tecla numerica pressionada - utiliza para passar para o frag-shader para marcar malha selecionada
+	if ((glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_0) == GLFW_PRESS))
+		teclaOjetoSelecionado = 0;
+	if ((glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS))
+		teclaOjetoSelecionado = 1;
+	if ((glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS))
+		teclaOjetoSelecionado = 2;
+	if ((glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS))
+		teclaOjetoSelecionado = 3;
+	if ((glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS))
+		teclaOjetoSelecionado = 4;
+	if ((glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS))
+		teclaOjetoSelecionado = 5;
+	if ((glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS))
+		teclaOjetoSelecionado = 6;
+	if ((glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS))
+		teclaOjetoSelecionado = 7;
+	if ((glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS))
+		teclaOjetoSelecionado = 8;
+	if ((glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS))
+		teclaOjetoSelecionado = 9;
+
+	teclaMovimentoDireitaPressionada = (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+	teclaMovimentoEsquerdaPressionada = (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

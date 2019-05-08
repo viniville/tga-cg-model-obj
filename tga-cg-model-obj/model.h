@@ -22,7 +22,10 @@
 #include <vector>
 using namespace std;
 
-static int teclaPressionada = 0;
+static int teclaOjetoSelecionado = 0;
+static bool teclaMovimentoDireitaPressionada = false;
+static bool teclaMovimentoEsquerdaPressionada = false;
+
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
@@ -46,7 +49,7 @@ public:
 	void Draw(Shader shader)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			shader.setBool("selecionado", teclaPressionada == (i+1));
+			shader.setBool("selecionado", teclaOjetoSelecionado == (i+1));
 			meshes[i].Draw(shader);
 		}
 	}

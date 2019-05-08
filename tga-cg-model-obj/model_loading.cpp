@@ -4,7 +4,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/type_ptr.hpp>,
+#include <queue>
 
 #include "filesystem.h"
 #include "shader_m.h"
@@ -31,6 +32,9 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+static queue<int> filaMovimentos;
+
 
 int main()
 {
@@ -90,6 +94,7 @@ int main()
 	// render loop
 	// -----------
 	bool inicializou = false;
+	glm::mat4 model;
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -117,21 +122,24 @@ int main()
 		ourShader.setMat4("view", view);
 
 		// render the loaded model
-		glm::mat4 model;
+		
 		if (!inicializou) {
 			inicializou = true;
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
 			model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
 		}
-		else {
-			if (teclaMovimentoDireitaPressionada) {
-				model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		while (!filaMovimentos.empty()) {
+			switch (filaMovimentos.front()) {
+				case 4: model = glm::translate(model, glm::vec3(-0.1f, 0.0f, 0.0f)); break;
+				case 6: model = glm::translate(model, glm::vec3( 0.1f, 0.0f, 0.0f)); break;
+				case 2: model = glm::translate(model, glm::vec3( 0.0f, -0.1f, 0.0f)); break;
+				case 8: model = glm::translate(model, glm::vec3( 0.0f, 0.1f, 0.0f)); break;
 			}
-			if (teclaMovimentoEsquerdaPressionada) {
-				model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 0.0f));
-			}
+			filaMovimentos.pop();
 		}
+
 		ourShader.setMat4("model", model);
 
 		ourModel.Draw(ourShader);
@@ -186,9 +194,18 @@ void processInput(GLFWwindow *window)
 	if ((glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) || (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS))
 		teclaOjetoSelecionado = 9;
 
-	teclaMovimentoDireitaPressionada = (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
-	teclaMovimentoEsquerdaPressionada = (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
-
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		filaMovimentos.push(6);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		filaMovimentos.push(4);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		filaMovimentos.push(8);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		filaMovimentos.push(2);
+	}
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

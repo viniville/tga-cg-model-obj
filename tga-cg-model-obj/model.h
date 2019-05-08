@@ -23,9 +23,6 @@
 using namespace std;
 
 static int teclaOjetoSelecionado = 0;
-static bool teclaMovimentoDireitaPressionada = false;
-static bool teclaMovimentoEsquerdaPressionada = false;
-
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
